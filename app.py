@@ -6,6 +6,8 @@ Created on Sun Dec 24 09:18:30 2017
 @author: riggs
 """
 
+import os
+
 from flask import Flask,render_template,request
 
 from bokeh.plotting import figure,show,output_file
@@ -21,6 +23,8 @@ app = Flask(__name__)
 
 Quandl = 'https://www.quandl.com/api/v3/datatables/WIKI/PRICES.json?api_key=Pmcp5Sx6Juhs4MyAyhUU'
 Quandl_csv = 'WIKI-PRICES-sample.csv'
+
+#df = pd.read_json(Quandl,orient='index')
 
 df = pd.DataFrame.from_csv(Quandl_csv)
 df['date'] = pd.to_datetime(df['date'])
@@ -105,4 +109,5 @@ def main():
         return render_template('Start.html')
     
 if __name__ == '__main__':
-    app.run(port=33507)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host='0.0.0.0', port=port)
