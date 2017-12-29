@@ -29,7 +29,7 @@ Quandl_csv = 'WIKI-PRICES-sample.csv'
 df = pd.DataFrame.from_csv(Quandl_csv)
 df['date'] = pd.to_datetime(df['date'])
 
-@app.route('/index',methods =['GET','POST'])
+@app.route('/',methods =['GET','POST'])
 def main():
     if request.method == 'GET':
         return render_template('Start.html')
@@ -101,7 +101,7 @@ def main():
                                                     years=["%d %B %Y"],
                                                 )
     
-            output_file("Plot.html", title="Ticker Plot")
+            #output_file("Plot.html", title="Ticker Plot", root_dir = "template")
             show(p)
         else:
             return render_template('Start.html')
