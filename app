@@ -14,10 +14,10 @@ from bokeh.models import DatetimeTickFormatter
 from math import pi
 
 import pandas as pd
-import requests
-import simplejson as json
+#import requests
+#import simplejson as json
 
-TickerDemo = Flask(__name__)
+app = Flask(__name__)
 
 Quandl = 'https://www.quandl.com/api/v3/datatables/WIKI/PRICES.json?api_key=Pmcp5Sx6Juhs4MyAyhUU'
 Quandl_csv = 'WIKI-PRICES-sample.csv'
@@ -25,7 +25,7 @@ Quandl_csv = 'WIKI-PRICES-sample.csv'
 df = pd.DataFrame.from_csv(Quandl_csv)
 df['date'] = pd.to_datetime(df['date'])
 
-@TickerDemo.route('/index',methods =['GET','POST'])
+@app.route('/index',methods =['GET','POST'])
 def main():
     if request.method == 'GET':
         return render_template('Start.html')
@@ -105,4 +105,4 @@ def main():
         return render_template('Start.html')
     
 if __name__ == '__main__':
-    TickerDemo.run()
+    app.run()
