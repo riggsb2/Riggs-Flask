@@ -10,7 +10,7 @@ import os
 
 from flask import Flask,render_template,request
 
-from bokeh.plotting import figure,show,output_file
+from bokeh.plotting import figure,show,output_file, save
 from bokeh.models import DatetimeTickFormatter
 
 from math import pi
@@ -91,7 +91,6 @@ def main():
       
             for (colr, leg, x, y ) in zip(colors, labels, xs, ys):
                 my_plot = p.line(x, y, color= colr, legend= leg)            
-            #p.multi_line(xs, ys)
             p.legend.location = "top_left"
             p.xaxis.major_label_orientation = pi/4
             p.xaxis.formatter=DatetimeTickFormatter(
@@ -100,13 +99,14 @@ def main():
                                                     months=["%d %B %Y"],
                                                     years=["%d %B %Y"],
                                                 )
-    
-            output_file("Plot.html", title="Ticker Plot")
-            show(p)
+            os.chdir('templates')
+            #output_file("Plot.html", title="Ticker Plot")
+            save(p,"Plot.html", title="Ticker Plot")
+            os.chdir('..')
         else:
             return render_template('Start.html')
         
-        return render_template('Start.html')
+        return render_template('Plot.html')
     
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
