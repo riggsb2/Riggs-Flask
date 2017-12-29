@@ -101,7 +101,7 @@ def main():
                                                     years=["%d %B %Y"],
                                                 )
     
-            #output_file("Plot.html", title="Ticker Plot", root_dir = "template")
+            output_file("Plot.html", title="Ticker Plot")
             show(p)
         else:
             return render_template('Start.html')
