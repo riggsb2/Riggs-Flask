@@ -57,7 +57,7 @@ def main():
             xs.append(x) 
             ys.append(y)
             colors.append('green')
-            labels.append('Adjuusted Closing')
+            labels.append('Adjusted Closing')
 
             
         if request.form.get('open'):
