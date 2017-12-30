@@ -10,7 +10,7 @@ import os
 
 from flask import Flask,render_template,request
 
-from bokeh.plotting import figure,show,output_file, save
+from bokeh.plotting import figure,show,save
 from bokeh.models import DatetimeTickFormatter
 
 from math import pi
@@ -21,10 +21,9 @@ import pandas as pd
 
 app = Flask(__name__)
 
-Quandl = 'https://www.quandl.com/api/v3/datatables/WIKI/PRICES.json?api_key=Pmcp5Sx6Juhs4MyAyhUU'
-Quandl_csv = 'WIKI-PRICES-sample.csv'
-
-#df = pd.read_json(Quandl,orient='index')
+Quandl_json = 'https://www.quandl.com/api/v3/datatables/WIKI/PRICES.json?api_key=Pmcp5Sx6Juhs4MyAyhUU'
+#Quandl_csv = 'WIKI-PRICES-sample.csv'
+Quandl_csv = "https://www.quandl.com/api/v3/datatables/WIKI/PRICES.csv?api_key=Pmcp5Sx6Juhs4MyAyhUU"
 
 df = pd.DataFrame.from_csv(Quandl_csv)
 df['date'] = pd.to_datetime(df['date'])
@@ -34,14 +33,18 @@ def main():
     if request.method == 'GET':
         return render_template('Start.html')
     else:
+        
+        #sets ticker value        
         ticker = request.form['ticker']
         
+        #checks to see if ticker is in page else refreshes page
         try:
             subset = df.loc[ticker]
             subset = subset.sort_values(by=['date'])
         except:
             return render_template('Start.html')
         
+        #sets up data
         x = subset['date']
         
         xs = []
@@ -49,6 +52,7 @@ def main():
         colors = []
         labels = []
         
+        #checks which boxes are checked and assembled data
         if request.form.get('close'):
             y = subset['close']
             xs.append(x) 
@@ -63,14 +67,12 @@ def main():
             colors.append('green')
             labels.append('Adjusted Closing')
 
-            
         if request.form.get('open'):
             y = subset['open']
             xs.append(x) 
             ys.append(y)
             colors.append('red')
             labels.append('Opening')
-
             
         if request.form.get('adj_open'):
             y = subset['adj_open']
@@ -78,8 +80,8 @@ def main():
             ys.append(y)
             colors.append('yellow')
             labels.append('Adjusted Opening')
-
-                    
+        
+        #plots if data exists else refreshes page          
         if xs and ys:
             title = '%s Prices'%(ticker)
             p = figure(plot_width = 500, plot_height = 500, title = title)
@@ -99,10 +101,15 @@ def main():
                                                     months=["%d %B %Y"],
                                                     years=["%d %B %Y"],
                                                 )
+            p.yaxis.axis_label = "U.S. Dollars"
+            p.xaxis.axis_label = "Date"
+                    
+            #Currently does not update displayed plot when resubmitting
+            #Plot.html changes in the file system but isn't displayed
             os.chdir('templates')
-            #output_file("Plot.html", title="Ticker Plot")
             save(p,"Plot.html", title="Ticker Plot")
             os.chdir('..')
+            
         else:
             return render_template('Start.html')
         
