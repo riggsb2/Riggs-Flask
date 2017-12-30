@@ -21,31 +21,39 @@ import pandas as pd
 
 app = Flask(__name__)
 
-Quandl_json = 'https://www.quandl.com/api/v3/datatables/WIKI/PRICES.json?api_key=Pmcp5Sx6Juhs4MyAyhUU'
-#Quandl_csv = 'WIKI-PRICES-sample.csv'
-Quandl_csv = "https://www.quandl.com/api/v3/datatables/WIKI/PRICES.csv?api_key=Pmcp5Sx6Juhs4MyAyhUU"
+base_url = 'https://www.quandl.com/api/v3/datasets/'
+database_code = 'WIKI'
+form = '.csv'
+api_key = 'Pmcp5Sx6Juhs4MyAyhUU'
 
-df = pd.DataFrame.from_csv(Quandl_csv)
-df['date'] = pd.to_datetime(df['date'])
+
+SAMPLE = "https://www.quandl.com/api/v3/datatables/WIKI/prices.csv?api_key=Pmcp5Sx6Juhs4MyAyhUU"
+#df = pd.read_json(address, orient='columns')
 
 @app.route('/',methods =['GET','POST'])
 def main():
     if request.method == 'GET':
         return render_template('Start.html')
     else:
-        
         #sets ticker value        
         ticker = request.form['ticker']
+        ticker = ticker.upper()
+        print(ticker)
+        dataset_code = '/'.join((ticker,'data'))
+        address = ''.join((base_url,database_code,'/',dataset_code,form,'?api_key=',api_key))
         
         #checks to see if ticker is in page else refreshes page
         try:
-            subset = df.loc[ticker]
-            subset = subset.sort_values(by=['date'])
+            df = pd.read_csv(address)
+            df['Date'] = pd.to_datetime(df['Date'])
+            #subset = df.loc[ticker]
+            #subset = subset.sort_values(by=['date'])
         except:
             return render_template('Start.html')
         
+        
         #sets up data
-        x = subset['date']
+        x = df['Date']
         
         xs = []
         ys = []
@@ -54,28 +62,28 @@ def main():
         
         #checks which boxes are checked and assembled data
         if request.form.get('close'):
-            y = subset['close']
+            y = df['Close']
             xs.append(x) 
             ys.append(y)
             colors.append('blue')
             labels.append('Closing')
             
         if request.form.get('adj_close'):
-            y = subset['adj_close']
+            y = df['Adj. Close']
             xs.append(x) 
             ys.append(y)
             colors.append('green')
             labels.append('Adjusted Closing')
 
         if request.form.get('open'):
-            y = subset['open']
+            y = df['Open']
             xs.append(x) 
             ys.append(y)
             colors.append('red')
             labels.append('Opening')
             
         if request.form.get('adj_open'):
-            y = subset['adj_open']
+            y = df['Adj. Open']
             xs.append(x) 
             ys.append(y)
             colors.append('yellow')
